@@ -1,0 +1,30 @@
+// Write an MPI program for the demonstration of MP_Scatter and MPI_Gather.
+
+#include <stdio.h>
+#include <mpi.h>
+
+int main(int argc, char *argv[]) {
+    int rank, size;
+    int data[4] = {10, 20, 30, 40};
+    int local_data, gathered_data[4];
+
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    MPI_Scatter(data, 1, MPI_INT, &local_data, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    printf("Process %d received data: %d\n", rank, local_data);
+
+    MPI_Gather(&local_data, 1, MPI_INT, gathered_data, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
+        printf("Gathered data: ");
+        for (int i = 0; i < size; i++) {
+            printf("%d ", gathered_data[i]);
+        }
+        printf("\n");
+    }
+
+    MPI_Finalize();
+    return 0;
+}
